@@ -3,9 +3,11 @@ package core;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
-import jdk.internal.util.xml.impl.Input;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -79,9 +81,7 @@ public class FileIO {
         //Auf unerwünschte Teile überprüfen
         for (int i = 0; i < mdlContentArray.length; i++) {
             mdlContentArray[i] = mdlContentArray[i].replaceAll("[\uFEFF-\uFFFF]", "");
-
         }
-
 
         //Rückgabe
         return mdlContentArray;
@@ -117,37 +117,4 @@ public class FileIO {
             e.printStackTrace();
         }
     }
-
-
-/*    public static String[] getZugMDLContent(File ZugMDL) throws IOException {
-
-        //File ZugMDL = new File(CONST.MODFOLDERPATH + "/" + ModName + "\\res\\models\\model\\vehicle\\ " + ZugoWaggon + "\\" + ZugName);
-
-        List<String> stringList = Files.readAllLines(ZugMDL.toPath());
-        String[] stringArray = stringList.toArray(new String[]{});
-        return stringArray;
-    }*/
-
-/*    public static void writeZugMDL(File ZugMDL, String[] Content) throws IOException {
-
-        //File ZugMDL = new File(CONST.MODFOLDERPATH + "/" + ModName + "\\res\\models\\model\\vehicle\\ " + ZugoWaggon + "\\" + ZugName);
-
-        BufferedWriter bufferedWriter = null;
-        FileWriter fileWriter = new FileWriter(ZugMDL);
-        bufferedWriter = new BufferedWriter(fileWriter);
-
-        //Content[0] = Content[0].substring(0);
-
-        for (int i = 0; i < Content.length; i++) {
-            bufferedWriter.write(Content[i] + "\n");
-            if (i == 0) {
-                System.out.println(Content[i] + "\n");
-            }
-        }
-
-        bufferedWriter.flush();
-        bufferedWriter.close();
-
-    }*/
-
 }

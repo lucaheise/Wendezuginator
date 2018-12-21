@@ -4,13 +4,15 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.IOException;
 
 public class Main extends Application {
 
@@ -183,65 +185,6 @@ public class Main extends Application {
 
 
     }
-
-
-
-
-  /*  public void setReversible(File ZugMDL) {
-        String[] ZugMDLContent = null;
-
-        //Lesen des Inhalts der MDL
-        try {
-            ZugMDLContent = FileIO.getZugMDLContent(ZugMDL);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        mainWindow.setTitle(ZugMDLContent[0]);
-
-        //Erstellen eines Backups der Originalen MDL
-        try {
-            File ZugMDLBackup = new File(ZugMDL.toString() + ".backup");
-            FileIO.writeZugMDL(ZugMDLBackup, ZugMDLContent);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //Suchen der Linie, in der TransportVehicle definiert wird
-        Integer LinieMitDefinition = 0;
-        String[] NewZugMDLContent = new String[ZugMDLContent.length + 1];
-
-        for (int i = 1; i < ZugMDLContent.length; i++) {
-            if (ZugMDLContent[i].contains("transportVehicle")) {
-                LinieMitDefinition = i;
-            }
-        }
-
-        System.out.println("transportVehicle auf Linie: " + LinieMitDefinition);
-
-        //Zusammensetzen des neuen MDL-Content
-
-        //Teil vor dem Einschub + Einschub
-        for (int i = 0; i < LinieMitDefinition + 1; i++) {
-            NewZugMDLContent[i] = ZugMDLContent[i];
-            NewZugMDLContent[i + 1] = "reversible = true,";
-        }
-
-        for (int i = LinieMitDefinition + 2; i < ZugMDLContent.length + 1; i++) {
-
-            NewZugMDLContent[i] = ZugMDLContent[i - 1];
-        }
-
-        //Schreiben der Modifizierten MDL
-        try {
-            FileIO.writeZugMDL(ZugMDL, NewZugMDLContent);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }*/
-
 
     public static void main(String[] args) {
         launch(args);
