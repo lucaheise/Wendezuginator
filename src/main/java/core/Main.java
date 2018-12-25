@@ -26,6 +26,12 @@ public class Main extends Application {
     ListView<String> vehiclefolderListView;
     ListView<String> mdllistListView;
 
+    public static void main(String[] args) {
+        launch(args);
+
+
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         mainWindow = primaryStage;
@@ -63,7 +69,21 @@ public class Main extends Application {
                     public void changed(ObservableValue<? extends String> ov,
                                         String old_val, String new_val) {
                         System.out.println("Mod Ausgewählt: " + new_val);
-                        OpenModVehicles(new_val);
+
+                        switch (FileIO.checkIfContainsTrains(new_val)) {
+                            case "KEINE":
+                                //Sollte hier eigentlich nicht vorkommen
+                                break;
+                            case "TRAIN":
+                                OpenMDLFolder(new File(CONST.MODFOLDERPATH + "/" + new_val + "/res/models/model/vehicle/train"));
+                                break;
+                            case "WAGGON":
+                                OpenMDLFolder(new File(CONST.MODFOLDERPATH + "/" + new_val + "/res/models/model/vehicle/waggon"));
+                                break;
+                            case "BEIDE":
+                                OpenModVehicles(new_val);
+                                break;
+                        }
 
                     }
                 });
@@ -133,18 +153,13 @@ public class Main extends Application {
                                         String old_val, String new_val) {
                         if (new_val.contains(".")) {
                             //Ausgewähltes Objekt ist eine Datei
-                            SetMDLToReversible(new File(MDLFolder.toString() + "/" + new_val));
+                            SetMDLToReversible(new File(MDLFolder.toString() + "/" + new_val.substring(5)));
+                            OpenMDLFolder(MDLFolder);
                         } else {
                             //Ausgewähltes Objekt ist ein Unterordner
                             System.out.println("Unterordner Ausgewählt: " + new_val);
                             OpenMDLFolder(new File(MDLFolder.toString() + "/" + new_val + "/"));
                         }
-
-                        //TODO ordner und datei unterscheiden
-                        //System.out.println("Vehicle-Typ Ausgewählt: " + new_val);
-
-                        //OpenMDLFolder(new File(ModVehiclesFolder.toString() + new_val + "/"));
-
                     }
                 });
     }
@@ -186,12 +201,6 @@ public class Main extends Application {
 
     }
 
-    public static void main(String[] args) {
-        launch(args);
-
-
-    }
-
     public Scene getStarterScene() {
         //Einträge für den Hauptmenübutton erstellen
         MenuItem itemStartseite = new MenuItem("Startseite");
@@ -206,7 +215,8 @@ public class Main extends Application {
 
         //Listener für die Knöpfe erstellen
         itemStartseite.setOnAction(event -> {
-            System.out.println("Zugordner ausgewählt");
+            System.out.println("Wechsele zur Modliste");
+            OpenModlist();
         });
 
         //Menüknopf der Menübar hinzufügen

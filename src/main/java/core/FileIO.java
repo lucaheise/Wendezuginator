@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FileIO {
@@ -19,14 +20,32 @@ public class FileIO {
         File ModOrdner = new File(CONST.MODFOLDERPATH);
 
         //Dateien Auflisten
-        String[] ModListe = ModOrdner.list();
+        String[] ModListeDirty = ModOrdner.list();
 
-        //TODO Steam-Mods ausschließen?
+        //Überprüfen, ob da ein Zug drin ist
 
-        //TODO Überprüfen, ob da ein Zug drin ist
+        List<String> ModListeClean = new ArrayList<>();
+
+        for (String element : ModListeDirty) {
+            switch (checkIfContainsTrains(element)) {
+                case "KEINE":
+                    break;
+                //Wenn der Mod Züge enthält, dann der Liste hinzufügen = Filter nur Züge und Waggons
+                default:
+                    //Mods von Urbangames rausfiltern
+                    if (!element.contains("urbangames")) {
+                        ModListeClean.add(element);
+                    }
+
+                    break;
+            }
+        }
+
+        //Liste in Stringarray umwandeln
+        String[] ZugUndWaggonArray = ModListeClean.toArray(new String[0]);
 
         //Rückgabe
-        return ModListe;
+        return ZugUndWaggonArray;
     }
 
     public static ListView<String> getModListView() {
@@ -43,11 +62,44 @@ public class FileIO {
     }
 
     private static String[] getVehicleOrdnerlist(File Ordner) {
+
         //Dateien Auflisten
         String[] VehicleOrdnerList = Ordner.list();
 
+        List<String> OrdnerInhaltsliste = new ArrayList<>();
+
+        for (String element : VehicleOrdnerList) {
+            if (!new File(Ordner.toString() + "/" + element).isDirectory()) {
+                System.out.println("File" + element);
+
+                String[] MdlContent = getMDLContent(new File(Ordner.toString() + "/" + element));
+
+                boolean isWendezug = false;
+
+                for (String mdlLine : MdlContent) {
+                    if (mdlLine.contains("reversible = true")) {
+                        isWendezug = true;
+                    }
+                }
+
+                if (isWendezug) {
+                    OrdnerInhaltsliste.add("[WZ] " + element);
+                } else {
+                    OrdnerInhaltsliste.add("[NW] " + element);
+                }
+
+
+            } else {
+                //Ist ein Ordner
+                OrdnerInhaltsliste.add(element);
+            }
+
+        }
+
+        String[] VehicleOrdnerListModified = OrdnerInhaltsliste.toArray(new String[0]);
+
         //Rückgabe
-        return VehicleOrdnerList;
+        return VehicleOrdnerListModified;
     }
 
     public static ListView<String> getOrdnerListView(File Ordner) {
@@ -76,7 +128,7 @@ public class FileIO {
 
 
         //Liste in ein Array umwandeln
-        String[] mdlContentArray = mdlContentList.toArray(new String[]{});
+        String[] mdlContentArray = mdlContentList.toArray(new String[0]);
 
         //Auf unerwünschte Teile überprüfen
         for (int i = 0; i < mdlContentArray.length; i++) {
@@ -105,9 +157,6 @@ public class FileIO {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (i == 0) {
-                System.out.println(MDLContent[i] + "\n");
-            }
         }
 
         try {
@@ -117,4 +166,40 @@ public class FileIO {
             e.printStackTrace();
         }
     }
+
+    //Rückgabe TRUE, wenn der Ordner existiert, sonst FALSE
+    public static boolean checkIfFolderExists(File File) {
+
+        return File.exists();
+
+    }
+
+    //Rückgabe von KEINE, TRAIN, WAGGON oder BEIDE
+    public static String checkIfContainsTrains(String ModName) {
+
+        File TrainFolder = new File(CONST.MODFOLDERPATH + "/" + ModName + "/res/models/model/vehicle/train");
+        File WaggonFolder = new File(CONST.MODFOLDERPATH + "/" + ModName + "/res/models/model/vehicle/waggon");
+
+        boolean TrainExists = checkIfFolderExists(TrainFolder);
+        boolean WaggonsExists = checkIfFolderExists(WaggonFolder);
+
+        if (TrainExists && !WaggonsExists) {
+            System.out.println(ModName + " enthält nur Züge");
+            return "TRAIN";
+        }
+
+        if (TrainExists && WaggonsExists) {
+            System.out.println(ModName + " enthält Züge und Waggons");
+            return "BEIDE";
+        }
+
+        if (!TrainExists && WaggonsExists) {
+            System.out.println(ModName + " enthält nur Waggons");
+            return "WAGGON";
+        }
+
+        System.out.println(ModName + " enthält keine Züge");
+        return "KEINE";
+    }
+
 }
